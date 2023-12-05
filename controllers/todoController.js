@@ -7,6 +7,7 @@ const getAllTodos = async (req, res) => {
     const user_id = req.user._id
 
     const todos = await Todo.find({user_id}).sort({createdAt: -1});
+    
     res.status(200).json(todos);
 }
 // get one todo
@@ -19,6 +20,9 @@ const getOneTodo = async (req, res) => {
 
     if(!todo){
         return res.status(404).json({msg: 'Todo not found'});
+    }
+    if (String(todo.user_id) !== String(req.user._id)) {
+        return res.status(403).json({ error: 'Unauthorized access' });
     }
 
     res.status(200).json(todo); 
@@ -70,7 +74,9 @@ const updateTodo = async (req, res) => {
     if (!todo) {
       return res.status(400).json({error: 'No such todo'})
     }
-  
+    if (String(todo.user_id) !== String(req.user._id)) {
+        return res.status(403).json({ error: 'Unauthorized access' });
+    }
     res.status(200).json(todo)
   }
 
@@ -86,7 +92,9 @@ const deleteTodo = async (req, res) => {
     if(!todo){
         return res.status(404).json({msg: 'Todo not found'});
     }
-
+    if (String(todo.user_id) !== String(req.user._id)) {
+        return res.status(403).json({ error: 'Unauthorized access' });
+    }
     res.status(200).json(todo); 
 }
 
